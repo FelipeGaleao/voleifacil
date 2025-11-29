@@ -36,22 +36,59 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
         }
     };
 
+    const generateCanvas = async () => {
+        if (!storyRef.current) return null;
+
+        // Clone the element to avoid Drawer transform issues
+        const clone = storyRef.current.cloneNode(true) as HTMLElement;
+
+        // Reset styles for the clone to ensure clean capture
+        clone.style.position = 'fixed';
+        clone.style.top = '-10000px';
+        clone.style.left = '0';
+        clone.style.zIndex = '-1000';
+        clone.style.width = '100%';
+        clone.style.maxWidth = '400px'; // Consistent width
+        clone.style.aspectRatio = '9/16';
+
+        document.body.appendChild(clone);
+
+        try {
+            // Wait for images to render in the clone
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const canvas = await html2canvas(clone, {
+                useCORS: true,
+                scale: 2, // Good quality
+                backgroundColor: '#000000',
+                logging: false,
+                onclone: (doc) => {
+                    // Ensure images are loaded
+                    const images = doc.getElementsByTagName('img');
+                    for (let i = 0; i < images.length; i++) {
+                        images[i].crossOrigin = "Anonymous";
+                    }
+                }
+            });
+
+            return canvas;
+        } catch (err) {
+            console.error('Canvas generation failed:', err);
+            throw err;
+        } finally {
+            document.body.removeChild(clone);
+        }
+    };
+
     const handleShare = async () => {
-        if (!storyRef.current) return;
         setIsGenerating(true);
 
         try {
-            // Wait a bit for images to load/render
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            const canvas = await html2canvas(storyRef.current, {
-                useCORS: true,
-                scale: 2, // Better quality
-                backgroundColor: null,
-            });
+            const canvas = await generateCanvas();
+            if (!canvas) throw new Error("Falha ao gerar canvas");
 
             canvas.toBlob(async (blob) => {
-                if (!blob) return;
+                if (!blob) throw new Error("Falha ao gerar imagem");
 
                 const file = new File([blob], 'volei-ranking.png', { type: 'image/png' });
 
@@ -65,10 +102,10 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
                         toast.success('Compartilhado com sucesso!');
                     } catch (err) {
                         console.error('Error sharing:', err);
-                        // User might have cancelled share
+                        // User cancelled
                     }
                 } else {
-                    // Fallback to download
+                    // Fallback
                     const link = document.createElement('a');
                     link.download = 'volei-ranking.png';
                     link.href = canvas.toDataURL();
@@ -80,22 +117,17 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
 
         } catch (err) {
             console.error('Error generating image:', err);
+            toast.error('Erro ao criar imagem. Tente novamente.');
             setIsGenerating(false);
         }
     };
 
     const handleDownload = async () => {
-        if (!storyRef.current) return;
         setIsGenerating(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            const canvas = await html2canvas(storyRef.current, {
-                useCORS: true,
-                scale: 2,
-                backgroundColor: null,
-            });
+            const canvas = await generateCanvas();
+            if (!canvas) throw new Error("Falha ao gerar canvas");
 
             const link = document.createElement('a');
             link.download = 'volei-ranking.png';
