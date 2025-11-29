@@ -46,18 +46,20 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center p-6 font-sans text-slate-800">
+    <div className="h-[calc(100dvh-5rem)] bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 overflow-hidden">
       {/* Title */}
-      <h1 className="text-2xl font-bold mb-8 text-center text-slate-900 tracking-tight">
+      <h1 className="text-2xl font-bold mb-2 text-center text-slate-900 tracking-tight shrink-0">
         Vôlei Areia STI
       </h1>
 
       {/* Main Card Container */}
-      <Card className="w-full max-w-md flex-1 flex flex-col bg-white border-2 border-blue-400 shadow-sm rounded-3xl overflow-hidden">
+      <Card className="w-full max-w-md flex-1 flex flex-col bg-white border-2 border-blue-400 shadow-sm rounded-3xl overflow-hidden min-h-0">
 
         {/* Header/Label */}
-        <div className="pt-6 px-6 pb-2">
-          <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider text-center">Jogadores</h2>
+        <div className="pt-4 px-6 pb-2 shrink-0">
+          <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider text-center">
+            {players.length} Jogadores
+          </h2>
         </div>
 
         {/* Player List */}
@@ -124,7 +126,7 @@ export default function Home() {
         </ScrollArea>
 
         {/* Add Player Input */}
-        <div className="p-6 bg-slate-50/50 border-t border-slate-100">
+        <div className="p-4 bg-slate-50/50 border-t border-slate-100">
           <form onSubmit={handleAddPlayer} className="flex gap-2">
             <Input
               placeholder="Insira o nome do jogador"
@@ -145,7 +147,7 @@ export default function Home() {
       </Card>
 
       {/* Start Button */}
-      <div className="w-full max-w-md mt-6 mb-4">
+      <div className="w-full max-w-md mt-4 mb-2">
         <Button
           onClick={handleStartSession}
           className="w-full h-14 text-lg font-bold rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all active:scale-95"

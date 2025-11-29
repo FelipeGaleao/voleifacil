@@ -217,6 +217,15 @@ body {
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-slate-50 text-foreground;
+  }
+
+  /* Global smooth transitions for interactive elements */
+  button,
+  a,
+  input,
+  select,
+  textarea {
+    @apply transition-all duration-200 ease-in-out;
   }
 }

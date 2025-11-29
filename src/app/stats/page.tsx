@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 export default function StatsPage() {
     const { players, match } = useMatchStore();
 
@@ -16,11 +18,20 @@ export default function StatsPage() {
         return b.gamesPlayed - a.gamesPlayed;
     });
 
+    // Sort players by Games Played (desc) for the chart
+    const sortedByGames = [...players].sort((a, b) => b.gamesPlayed - a.gamesPlayed);
+
     const [expandedMatch, setExpandedMatch] = useState<number | null>(null);
+    const [showAllRanking, setShowAllRanking] = useState(false);
+    const [showAllHistory, setShowAllHistory] = useState(false);
 
     const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || 'Unknown';
 
     const totalGames = match.history.length;
+
+    const displayedRanking = showAllRanking ? sortedByWins : sortedByWins.slice(0, 5);
+    const historyReversed = [...match.history].reverse();
+    const displayedHistory = showAllHistory ? historyReversed : historyReversed.slice(0, 5);
 
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col p-4 md:p-6 font-sans text-slate-800">
@@ -37,7 +48,7 @@ export default function StatsPage() {
             </header>
 
             <ScrollArea className="flex-1 -mx-4 px-4 md:-mx-6 md:px-6 pb-6">
-                <div className="space-y-6 pb-8">
+                <div className="space-y-6 pb-20">
 
                     {/* Ranking Card */}
                     <section>
@@ -47,49 +58,72 @@ export default function StatsPage() {
                                 {sortedByWins.length === 0 ? (
                                     <p className="text-center text-slate-400 py-8 text-sm">Nenhuma vitória registrada.</p>
                                 ) : (
-                                    sortedByWins.map((player, index) => (
-                                        <div key={player.id} className="flex items-center p-4 gap-3">
-                                            {/* Position Badge */}
-                                            <div className="w-8 flex justify-center">
-                                                {index === 0 && (
-                                                    <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold shadow-sm">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                    <>
+                                        <AnimatePresence mode="popLayout">
+                                            {displayedRanking.map((player, index) => (
+                                                <motion.div
+                                                    key={player.id}
+                                                    layout
+                                                    initial={{ opacity: 0, x: -20 }}
+                                                    animate={{ opacity: 1, x: 0 }}
+                                                    transition={{ delay: index * 0.05 }}
+                                                    className="flex items-center p-4 gap-3"
+                                                >
+                                                    {/* Position Badge */}
+                                                    <div className="w-8 flex justify-center">
+                                                        {index === 0 && (
+                                                            <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold shadow-sm">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                                            </div>
+                                                        )}
+                                                        {index === 1 && (
+                                                            <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-sm">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                                            </div>
+                                                        )}
+                                                        {index === 2 && (
+                                                            <div className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white font-bold shadow-sm">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                                            </div>
+                                                        )}
+                                                        {index > 2 && (
+                                                            <span className="text-slate-400 font-bold text-lg">{index + 1}</span>
+                                                        )}
                                                     </div>
-                                                )}
-                                                {index === 1 && (
-                                                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-sm">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+
+                                                    {/* Avatar */}
+                                                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm border-2 border-white shadow-sm">
+                                                        {player.name.substring(0, 2).toUpperCase()}
                                                     </div>
-                                                )}
-                                                {index === 2 && (
-                                                    <div className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white font-bold shadow-sm">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+
+                                                    {/* Name */}
+                                                    <div className="flex-1 font-bold text-slate-700 text-base truncate">
+                                                        {player.name}
                                                     </div>
-                                                )}
-                                                {index > 2 && (
-                                                    <span className="text-slate-400 font-bold text-lg">{index + 1}</span>
-                                                )}
-                                            </div>
 
-                                            {/* Avatar */}
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm border-2 border-white shadow-sm">
-                                                {player.name.substring(0, 2).toUpperCase()}
-                                            </div>
+                                                    {/* Wins Pill */}
+                                                    <div className={`
+                            px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm
+                            ${index === 0 || index === 1 ? 'bg-green-500' : 'bg-orange-400'}
+                          `}>
+                                                        {player.wins} Vitórias
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </AnimatePresence>
 
-                                            {/* Name */}
-                                            <div className="flex-1 font-bold text-slate-700 text-base truncate">
-                                                {player.name}
+                                        {sortedByWins.length > 5 && (
+                                            <div className="p-2 text-center border-t border-slate-50">
+                                                <Button
+                                                    variant="ghost"
+                                                    onClick={() => setShowAllRanking(!showAllRanking)}
+                                                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 text-sm font-bold w-full"
+                                                >
+                                                    {showAllRanking ? 'Ver menos' : `Ver mais (${sortedByWins.length - 5})`}
+                                                </Button>
                                             </div>
-
-                                            {/* Wins Pill */}
-                                            <div className={`
-                        px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm
-                        ${index === 0 || index === 1 ? 'bg-green-500' : 'bg-orange-400'}
-                      `}>
-                                                {player.wins} Vitórias
-                                            </div>
-                                        </div>
-                                    ))
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </Card>
@@ -97,11 +131,17 @@ export default function StatsPage() {
 
                     {/* Stats Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {/* Vitórias por Jogador (Mini Bars) */}
+                        {/* Jogadores que mais jogaram (Mini Bars) */}
                         <Card className="bg-white border-0 shadow-sm rounded-3xl p-5 flex flex-col">
-                            <h3 className="text-sm font-bold text-slate-700 mb-4">Vitórias por Jogador</h3>
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-sm font-bold text-slate-700">Jogadores que mais jogaram</h3>
+                                <div className="flex items-center gap-1">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase">Jogos</span>
+                                </div>
+                            </div>
                             <div className="space-y-3 flex-1">
-                                {sortedByWins.slice(0, 3).map((player, idx) => (
+                                {sortedByGames.slice(0, 3).map((player, idx) => (
                                     <div key={player.id} className="flex items-center gap-2">
                                         <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600">
                                             {player.name.substring(0, 1)}
@@ -109,12 +149,13 @@ export default function StatsPage() {
                                         <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
                                             <div
                                                 className={`h-full rounded-full ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-green-500' : 'bg-orange-400'}`}
-                                                style={{ width: `${Math.max(10, (player.wins / (sortedByWins[0]?.wins || 1)) * 100)}%` }}
+                                                style={{ width: `${Math.max(10, (player.gamesPlayed / (sortedByGames[0]?.gamesPlayed || 1)) * 100)}%` }}
                                             ></div>
                                         </div>
+                                        <span className="text-xs font-bold text-slate-500 w-4 text-right">{player.gamesPlayed}</span>
                                     </div>
                                 ))}
-                                {sortedByWins.length === 0 && <span className="text-slate-300 text-xs">Sem dados</span>}
+                                {sortedByGames.length === 0 && <span className="text-slate-300 text-xs">Sem dados</span>}
                             </div>
                         </Card>
 
@@ -139,59 +180,73 @@ export default function StatsPage() {
                                 {match.history.length === 0 ? (
                                     <p className="text-center text-slate-400 py-6 text-sm">Nenhuma partida finalizada.</p>
                                 ) : (
-                                    [...match.history].reverse().map((item, index) => (
-                                        <div
-                                            key={index}
-                                            className="flex flex-col cursor-pointer hover:bg-slate-50 transition-colors"
-                                            onClick={() => setExpandedMatch(expandedMatch === index ? null : index)}
-                                        >
-                                            <div className="p-3 flex items-center gap-3">
-                                                <div className="w-5 h-5 rounded-full border border-slate-200 flex items-center justify-center text-slate-300">
-                                                    {expandedMatch === index ? (
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
-                                                    ) : (
-                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
-                                                    )}
+                                    <>
+                                        {displayedHistory.map((item, index) => (
+                                            <div
+                                                key={index}
+                                                className="flex flex-col cursor-pointer hover:bg-slate-50 transition-colors"
+                                                onClick={() => setExpandedMatch(expandedMatch === index ? null : index)}
+                                            >
+                                                <div className="p-3 flex items-center gap-3">
+                                                    <div className="w-5 h-5 rounded-full border border-slate-200 flex items-center justify-center text-slate-300">
+                                                        {expandedMatch === index ? (
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+                                                        ) : (
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1 text-sm text-slate-600">
+                                                        <span className="font-medium text-slate-800">Time {item.winner}</span> venceu
+                                                        <span className="text-slate-400 mx-1">-</span>
+                                                        <span className="text-slate-500">{item.score}</span>
+                                                    </div>
+                                                    <div className={`w-3 h-3 rounded-full ${item.winner === 'A' ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
                                                 </div>
-                                                <div className="flex-1 text-sm text-slate-600">
-                                                    <span className="font-medium text-slate-800">Time {item.winner}</span> venceu
-                                                    <span className="text-slate-400 mx-1">-</span>
-                                                    <span className="text-slate-500">{item.score}</span>
-                                                </div>
-                                                <div className={`w-3 h-3 rounded-full ${item.winner === 'A' ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
-                                            </div>
 
-                                            {/* Expanded Details */}
-                                            {expandedMatch === index && (
-                                                <div className="px-11 pb-3 text-xs grid grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-200">
-                                                    <div>
-                                                        <div className="font-bold text-blue-500 mb-1">TIME A</div>
-                                                        <div className="text-slate-500 flex flex-col gap-0.5">
-                                                            {item.teamA && item.teamA.length > 0 ? (
-                                                                item.teamA.map(id => (
-                                                                    <span key={id}>{getPlayerName(id)}</span>
-                                                                ))
-                                                            ) : (
-                                                                <span className="italic opacity-50">Sem dados</span>
-                                                            )}
+                                                {/* Expanded Details */}
+                                                {expandedMatch === index && (
+                                                    <div className="px-11 pb-3 text-xs grid grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-200">
+                                                        <div>
+                                                            <div className="font-bold text-blue-500 mb-1">TIME A</div>
+                                                            <div className="text-slate-500 flex flex-col gap-0.5">
+                                                                {item.teamA && item.teamA.length > 0 ? (
+                                                                    item.teamA.map(id => (
+                                                                        <span key={id}>{getPlayerName(id)}</span>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="italic opacity-50">Sem dados</span>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className="font-bold text-orange-500 mb-1">TIME B</div>
+                                                            <div className="text-slate-500 flex flex-col gap-0.5">
+                                                                {item.teamB && item.teamB.length > 0 ? (
+                                                                    item.teamB.map(id => (
+                                                                        <span key={id}>{getPlayerName(id)}</span>
+                                                                    ))
+                                                                ) : (
+                                                                    <span className="italic opacity-50">Sem dados</span>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                    <div className="text-right">
-                                                        <div className="font-bold text-orange-500 mb-1">TIME B</div>
-                                                        <div className="text-slate-500 flex flex-col gap-0.5">
-                                                            {item.teamB && item.teamB.length > 0 ? (
-                                                                item.teamB.map(id => (
-                                                                    <span key={id}>{getPlayerName(id)}</span>
-                                                                ))
-                                                            ) : (
-                                                                <span className="italic opacity-50">Sem dados</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))
+                                                )}
+                                            </div>
+                                        ))}
+
+                                        {match.history.length > 5 && (
+                                            <div className="p-2 text-center border-t border-slate-50">
+                                                <Button
+                                                    variant="ghost"
+                                                    onClick={() => setShowAllHistory(!showAllHistory)}
+                                                    className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 text-sm font-bold w-full"
+                                                >
+                                                    {showAllHistory ? 'Ver menos' : `Ver mais (${match.history.length - 5})`}
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </>
                                 )}
                             </div>
                         </Card>
