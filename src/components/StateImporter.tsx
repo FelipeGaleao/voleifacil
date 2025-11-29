@@ -26,9 +26,8 @@ export function StateImporter() {
         if (pendingState) {
             importState(pendingState);
             setPendingState(null);
-            // Clear hash
-            window.history.pushState("", document.title, window.location.pathname + window.location.search);
-            alert('Estado carregado com sucesso!');
+            // Clear hash without error
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
             router.push('/stats');
         }
     };
