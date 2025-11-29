@@ -15,7 +15,9 @@ export function ShareButton() {
             const stateToShare = {
                 players: store.players,
                 queue: store.queue,
-                match: store.match
+                match: store.match,
+                pixKey: store.pixKey,
+                courtValue: store.courtValue
             };
 
             const longLink = generateShareLink(stateToShare);
