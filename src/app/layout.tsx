@@ -11,8 +11,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Vôlei Match Manager",
-  description: "Organize your volleyball matches with ease.",
+  title: "Volei STI Areia",
+  description: "Organizador de Volei de Areia.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
