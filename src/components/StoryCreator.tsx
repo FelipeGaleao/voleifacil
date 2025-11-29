@@ -62,6 +62,12 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
         clone.style.transform = 'none';
         clone.style.borderRadius = '0'; // Remove border radius for the image
 
+        // Remove classes that may cause html2canvas issues on mobile
+        clone.classList.remove('backdrop-blur-md');
+        clone.style.backdropFilter = 'none';
+        // Ensure background colors are explicit
+        clone.style.backgroundColor = '#000000';
+
         wrapper.appendChild(clone);
 
         try {
@@ -69,13 +75,13 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
             await new Promise(resolve => setTimeout(resolve, 800)); // Increased timeout
 
             const canvas = await html2canvas(clone, {
-                useCORS: true,
+                useCORS: false,
+                allowTaint: true,
                 scale: 2, // Good quality
                 backgroundColor: '#000000',
                 logging: false,
                 width: 400,
                 height: 711,
-                // Removed onclone crossOrigin hack as we use base64
             });
 
             return canvas;
