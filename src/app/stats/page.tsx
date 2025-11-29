@@ -37,16 +37,16 @@ export default function StatsPage() {
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col p-4 md:p-6 font-sans text-slate-800">
             {/* Header */}
-            <header className="flex justify-between items-center mb-6 relative">
-                <Link href="/dashboard" className="absolute left-0">
+            <header className="flex items-center justify-between mb-6 gap-2">
+                <Link href="/dashboard" className="shrink-0">
                     <Button variant="ghost" className="text-slate-400 hover:text-slate-800 -ml-2">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                     </Button>
                 </Link>
-                <h1 className="text-2xl font-bold text-center w-full text-slate-900 tracking-tight">
+                <h1 className="text-xl md:text-2xl font-bold text-center text-slate-900 tracking-tight flex-1 truncate">
                     Resumo da Resenha
                 </h1>
-                <div className="absolute right-0">
+                <div className="shrink-0">
                     <StoryCreator players={players} totalGames={totalGames} />
                 </div>
             </header>

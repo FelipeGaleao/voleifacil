@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useMatchStore } from '../store/useMatchStore';
 import { parseStateFromLink } from '../utils/share';
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,8 @@ import { Card } from "@/components/ui/card";
 export function StateImporter() {
     const { importState } = useMatchStore();
     const [pendingState, setPendingState] = useState<any>(null);
+
+    const router = useRouter();
 
     useEffect(() => {
         if (typeof window !== 'undefined' && window.location.hash.includes('state=')) {
@@ -26,6 +29,7 @@ export function StateImporter() {
             // Clear hash
             window.history.pushState("", document.title, window.location.pathname + window.location.search);
             alert('Estado carregado com sucesso!');
+            router.push('/stats');
         }
     };
 

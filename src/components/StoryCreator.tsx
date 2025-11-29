@@ -92,16 +92,18 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
 
             <Button
                 variant="outline"
-                className="gap-2 border-purple-200 text-purple-600 hover:bg-purple-50"
+                size="icon"
+                className="md:w-auto md:px-4 gap-2 border-purple-200 text-purple-600 hover:bg-purple-50 rounded-full"
                 onClick={() => fileInputRef.current?.click()}
+                aria-label="Criar Story"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></svg>
-                Criar Story
+                <span className="hidden md:inline">Criar Story</span>
             </Button>
 
             <Drawer open={isOpen} onOpenChange={setIsOpen}>
                 <DrawerContent className="bg-slate-900 border-slate-800 text-white max-h-[95dvh]">
-                    <div className="mx-auto w-full max-w-md p-4 flex flex-col items-center gap-4 h-full">
+                    <div className="mx-auto w-full max-w-md p-4 flex flex-col items-center gap-4 h-full overflow-y-auto">
                         <div className="flex justify-between w-full items-center">
                             <h3 className="font-bold text-lg">Pré-visualização</h3>
                             <DrawerClose asChild>
