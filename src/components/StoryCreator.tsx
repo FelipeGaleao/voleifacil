@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose } from "@/components/ui/drawer";
 import { Player } from '@/store/useMatchStore';
@@ -61,8 +62,10 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
                             title: 'Ranking do Vôlei',
                             text: 'Confira o ranking de hoje!'
                         });
+                        toast.success('Compartilhado com sucesso!');
                     } catch (err) {
                         console.error('Error sharing:', err);
+                        // User might have cancelled share
                     }
                 } else {
                     // Fallback to download
@@ -70,12 +73,40 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
                     link.download = 'volei-ranking.png';
                     link.href = canvas.toDataURL();
                     link.click();
+                    toast.info('Compartilhamento nativo indisponível. Imagem baixada!');
                 }
                 setIsGenerating(false);
             }, 'image/png');
 
         } catch (err) {
             console.error('Error generating image:', err);
+            setIsGenerating(false);
+        }
+    };
+
+    const handleDownload = async () => {
+        if (!storyRef.current) return;
+        setIsGenerating(true);
+
+        try {
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            const canvas = await html2canvas(storyRef.current, {
+                useCORS: true,
+                scale: 2,
+                backgroundColor: null,
+            });
+
+            const link = document.createElement('a');
+            link.download = 'volei-ranking.png';
+            link.href = canvas.toDataURL();
+            link.click();
+            toast.success('Imagem baixada com sucesso!');
+
+        } catch (err) {
+            console.error('Error downloading:', err);
+            toast.error('Erro ao baixar imagem.');
+        } finally {
             setIsGenerating(false);
         }
     };
@@ -185,6 +216,15 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold h-12 rounded-full shadow-lg shadow-blue-900/20"
                         >
                             {isGenerating ? 'Gerando...' : 'Compartilhar Story 📸'}
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            onClick={handleDownload}
+                            disabled={isGenerating}
+                            className="w-full text-slate-400 hover:text-white hover:bg-slate-800 h-12 rounded-full"
+                        >
+                            Baixar Imagem ⬇️
                         </Button>
                     </div>
                 </DrawerContent>
