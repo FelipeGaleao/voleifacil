@@ -8,9 +8,10 @@ import { Player } from '@/store/useMatchStore';
 
 interface StoryCreatorProps {
     players: Player[];
+    totalGames: number;
 }
 
-export function StoryCreator({ players }: StoryCreatorProps) {
+export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [image, setImage] = useState<string | null>(null);
     const [isGenerating, setIsGenerating] = useState(false);
@@ -157,7 +158,7 @@ export function StoryCreator({ players }: StoryCreatorProps) {
                                                     {player.name}
                                                 </span>
                                                 <span className="text-white/90 text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">
-                                                    {player.wins} Vits
+                                                    {player.wins} Vitórias
                                                 </span>
                                             </div>
                                         ))}
@@ -166,6 +167,9 @@ export function StoryCreator({ players }: StoryCreatorProps) {
 
                                 {/* Footer / Date */}
                                 <div className="text-center pb-4">
+                                    <p className="text-white font-bold text-lg drop-shadow-md mb-1">
+                                        {totalGames} Sets Jogados
+                                    </p>
                                     <p className="text-white/60 text-xs font-mono">
                                         {new Date().toLocaleDateString('pt-BR')}
                                     </p>

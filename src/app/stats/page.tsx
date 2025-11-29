@@ -47,7 +47,7 @@ export default function StatsPage() {
                     Resumo da Resenha
                 </h1>
                 <div className="absolute right-0">
-                    <StoryCreator players={players} />
+                    <StoryCreator players={players} totalGames={totalGames} />
                 </div>
             </header>
 
