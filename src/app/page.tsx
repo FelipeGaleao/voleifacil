@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useMatch } from '../context/MatchContext';
+import { useMatchStore } from '../store/useMatchStore';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -10,7 +10,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const { state, dispatch } = useMatch();
+  const { players, addPlayer, togglePresence, deletePlayer, editPlayerName } = useMatchStore();
   const [newPlayerName, setNewPlayerName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
@@ -19,7 +19,7 @@ export default function Home() {
   const handleAddPlayer = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPlayerName.trim()) return;
-    dispatch({ type: 'ADD_PLAYER', name: newPlayerName.trim() });
+    addPlayer(newPlayerName.trim());
     setNewPlayerName('');
   };
 
@@ -34,14 +34,14 @@ export default function Home() {
 
   const saveEdit = (id: string) => {
     if (editName.trim()) {
-      dispatch({ type: 'EDIT_PLAYER_NAME', id, name: editName.trim() });
+      editPlayerName(id, editName.trim());
     }
     setEditingId(null);
   };
 
   const handleDelete = (id: string) => {
     if (confirm('Tem certeza que deseja remover este jogador?')) {
-      dispatch({ type: 'DELETE_PLAYER', id });
+      deletePlayer(id);
     }
   };
 
@@ -63,12 +63,12 @@ export default function Home() {
         {/* Player List */}
         <ScrollArea className="flex-1 px-6 pb-4">
           <div className="space-y-3">
-            {state.players.length === 0 ? (
+            {players.length === 0 ? (
               <p className="text-center text-slate-400 text-sm py-10">
                 Nenhum jogador cadastrado.
               </p>
             ) : (
-              state.players.map((player) => (
+              players.map((player) => (
                 <div key={player.id} className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0 group">
                   <div className="flex items-center gap-3 flex-1 min-w-0 mr-2">
                     {/* Avatar */}
@@ -107,7 +107,7 @@ export default function Home() {
                   <div className="flex items-center gap-3">
                     <Switch
                       checked={player.isPresent}
-                      onCheckedChange={() => dispatch({ type: 'TOGGLE_PRESENCE', id: player.id })}
+                      onCheckedChange={() => togglePresence(player.id)}
                       className="data-[state=checked]:bg-blue-500"
                     />
                     <button

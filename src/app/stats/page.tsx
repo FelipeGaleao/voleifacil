@@ -2,14 +2,13 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useMatch } from '../../context/MatchContext';
+import { useMatchStore } from '../../store/useMatchStore';
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 
 export default function StatsPage() {
-    const { state } = useMatch();
-    const { players, match } = state;
+    const { players, match } = useMatchStore();
 
     // Sort players by Wins (desc), then Games Played (desc)
     const sortedByWins = [...players].sort((a, b) => {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMatch } from '../../context/MatchContext';
+import { useMatchStore } from '../../store/useMatchStore';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -8,18 +8,17 @@ import { useRouter } from 'next/navigation';
 import { playSound } from '../../utils/sounds';
 
 export default function Dashboard() {
-    const { state, dispatch } = useMatch();
-    const { match, queue, players } = state;
+    const { match, queue, players, shuffleTeams, rotateQueue, startMatch } = useMatchStore();
     const router = useRouter();
 
     const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || 'Unknown';
 
     const handleShuffle = () => {
-        dispatch({ type: 'SHUFFLE_TEAMS' });
+        shuffleTeams();
     };
 
     const handleAdvance = () => {
-        dispatch({ type: 'ROTATE_QUEUE' });
+        rotateQueue();
     };
 
     return (
@@ -116,7 +115,7 @@ export default function Dashboard() {
                     onClick={() => {
                         if (!match.active && match.teamA.length > 0) {
                             playSound('start');
-                            dispatch({ type: 'START_MATCH' }); // Ensure active state
+                            startMatch(); // Ensure active state
                         }
                         router.push('/match');
                     }}

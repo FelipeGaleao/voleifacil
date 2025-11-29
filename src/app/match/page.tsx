@@ -1,16 +1,20 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useMatch } from '../../context/MatchContext';
+import { useMatchStore } from '../../store/useMatchStore';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { playSound } from '../../utils/sounds';
 
 export default function MatchPage() {
-    const { state, dispatch, isLoaded } = useMatch();
-    const { match, players } = state;
+    const { match, players, scorePoint, decreasePoint, endMatch } = useMatchStore();
+    const [isLoaded, setIsLoaded] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        setIsLoaded(true);
+    }, []);
 
     // Redirect if no active match
     useEffect(() => {
@@ -25,7 +29,7 @@ export default function MatchPage() {
 
     const handleScore = (team: 'A' | 'B') => {
         playSound('score');
-        dispatch({ type: 'SCORE_POINT', team });
+        scorePoint(team);
     };
 
     const playDecreaseSound = () => {
@@ -51,7 +55,7 @@ export default function MatchPage() {
     const handleDecrease = (e: React.MouseEvent, team: 'A' | 'B') => {
         e.stopPropagation(); // Prevent triggering the card click (score increase)
         playSound('decrease');
-        dispatch({ type: 'DECREASE_POINT', team });
+        decreasePoint(team);
     };
 
     // Check for win condition
@@ -76,7 +80,7 @@ export default function MatchPage() {
     const handleFinishMatch = () => {
         if (potentialWinner) {
             playSound('finish');
-            dispatch({ type: 'END_MATCH', winner: potentialWinner });
+            endMatch(potentialWinner);
             router.push('/stats');
         }
     };
@@ -170,7 +174,7 @@ export default function MatchPage() {
 
                         <Button
                             variant="ghost"
-                            onClick={() => dispatch({ type: 'SCORE_POINT', team: potentialWinner === 'A' ? 'B' : 'A' })} // Undo/Continue
+                            onClick={() => scorePoint(potentialWinner === 'A' ? 'B' : 'A')} // Undo/Continue
                             className="w-full h-12 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full"
                         >
                             Corrigir / Continuar
