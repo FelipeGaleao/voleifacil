@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { useMatch } from '../../context/MatchContext';
 import { Card } from "@/components/ui/card";
@@ -15,6 +16,10 @@ export default function StatsPage() {
         if (b.wins !== a.wins) return b.wins - a.wins;
         return b.gamesPlayed - a.gamesPlayed;
     });
+
+    const [expandedMatch, setExpandedMatch] = useState<number | null>(null);
+
+    const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || 'Unknown';
 
     const totalGames = match.history.length;
 
@@ -48,13 +53,19 @@ export default function StatsPage() {
                                             {/* Position Badge */}
                                             <div className="w-8 flex justify-center">
                                                 {index === 0 && (
-                                                    <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold shadow-sm">1</div>
+                                                    <div className="w-8 h-8 rounded-full bg-yellow-400 flex items-center justify-center text-white font-bold shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                                    </div>
                                                 )}
                                                 {index === 1 && (
-                                                    <div className="w-8 h-8 rounded-full bg-slate-300 flex items-center justify-center text-white font-bold shadow-sm">2</div>
+                                                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                                    </div>
                                                 )}
                                                 {index === 2 && (
-                                                    <div className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white font-bold shadow-sm">3</div>
+                                                    <div className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white font-bold shadow-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" /></svg>
+                                                    </div>
                                                 )}
                                                 {index > 2 && (
                                                     <span className="text-slate-400 font-bold text-lg">{index + 1}</span>
@@ -130,16 +141,56 @@ export default function StatsPage() {
                                     <p className="text-center text-slate-400 py-6 text-sm">Nenhuma partida finalizada.</p>
                                 ) : (
                                     [...match.history].reverse().map((item, index) => (
-                                        <div key={index} className="p-3 flex items-center gap-3">
-                                            <div className="w-5 h-5 rounded-full border border-slate-200 flex items-center justify-center text-slate-300">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg>
+                                        <div
+                                            key={index}
+                                            className="flex flex-col cursor-pointer hover:bg-slate-50 transition-colors"
+                                            onClick={() => setExpandedMatch(expandedMatch === index ? null : index)}
+                                        >
+                                            <div className="p-3 flex items-center gap-3">
+                                                <div className="w-5 h-5 rounded-full border border-slate-200 flex items-center justify-center text-slate-300">
+                                                    {expandedMatch === index ? (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m18 15-6-6-6 6" /></svg>
+                                                    ) : (
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
+                                                    )}
+                                                </div>
+                                                <div className="flex-1 text-sm text-slate-600">
+                                                    <span className="font-medium text-slate-800">Time {item.winner}</span> venceu
+                                                    <span className="text-slate-400 mx-1">-</span>
+                                                    <span className="text-slate-500">{item.score}</span>
+                                                </div>
+                                                <div className={`w-3 h-3 rounded-full ${item.winner === 'A' ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
                                             </div>
-                                            <div className="flex-1 text-sm text-slate-600">
-                                                <span className="font-medium text-slate-800">Time {item.winner}</span> venceu
-                                                <span className="text-slate-400 mx-1">-</span>
-                                                <span className="text-slate-500">{item.score}</span>
-                                            </div>
-                                            <div className={`w-3 h-3 rounded-full ${item.winner === 'A' ? 'bg-blue-500' : 'bg-orange-500'}`}></div>
+
+                                            {/* Expanded Details */}
+                                            {expandedMatch === index && (
+                                                <div className="px-11 pb-3 text-xs grid grid-cols-2 gap-4 animate-in slide-in-from-top-1 duration-200">
+                                                    <div>
+                                                        <div className="font-bold text-blue-500 mb-1">TIME A</div>
+                                                        <div className="text-slate-500 flex flex-col gap-0.5">
+                                                            {item.teamA && item.teamA.length > 0 ? (
+                                                                item.teamA.map(id => (
+                                                                    <span key={id}>{getPlayerName(id)}</span>
+                                                                ))
+                                                            ) : (
+                                                                <span className="italic opacity-50">Sem dados</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right">
+                                                        <div className="font-bold text-orange-500 mb-1">TIME B</div>
+                                                        <div className="text-slate-500 flex flex-col gap-0.5">
+                                                            {item.teamB && item.teamB.length > 0 ? (
+                                                                item.teamB.map(id => (
+                                                                    <span key={id}>{getPlayerName(id)}</span>
+                                                                ))
+                                                            ) : (
+                                                                <span className="italic opacity-50">Sem dados</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     ))
                                 )}
