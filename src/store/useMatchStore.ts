@@ -44,6 +44,7 @@ interface MatchStore extends AppState {
     deletePlayer: (id: string) => void;
     editPlayerName: (id: string, name: string) => void;
     resetMatch: () => void; // Helper to reset match state if needed
+    importState: (newState: AppState) => void;
 }
 
 // --- Initial State ---
@@ -317,6 +318,10 @@ export const useMatchStore = create<MatchStore>()(
                     scoreA: 0,
                     scoreB: 0,
                 }
+            })),
+
+            importState: (newState) => set(() => ({
+                ...newState
             })),
         }),
         {

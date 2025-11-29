@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from 'next/navigation';
 import { playSound } from '../../utils/sounds';
+import { ShareButton } from "@/components/ShareButton";
 
 export default function Dashboard() {
     const { match, queue, players, shuffleTeams, rotateQueue, startMatch } = useMatchStore();
@@ -24,9 +25,12 @@ export default function Dashboard() {
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col p-6 font-sans text-slate-800">
             {/* Title */}
-            <h1 className="text-2xl font-bold text-center mb-8 text-slate-900 tracking-tight">
-                Formação de Times Automática
-            </h1>
+            <div className="flex justify-between items-center mb-8">
+                <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+                    Times
+                </h1>
+                <ShareButton />
+            </div>
 
             {/* Teams Section */}
             <div className="grid grid-cols-2 gap-4 mb-8">
