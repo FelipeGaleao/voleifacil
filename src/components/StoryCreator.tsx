@@ -39,36 +39,43 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
     const generateCanvas = async () => {
         if (!storyRef.current) return null;
 
-        // Clone the element to avoid Drawer transform issues
+        // Create a wrapper to hold the clone without affecting layout
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '0';
+        wrapper.style.left = '0';
+        wrapper.style.width = '100%';
+        wrapper.style.height = '100%';
+        wrapper.style.zIndex = '-9999';
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.pointerEvents = 'none';
+        wrapper.style.opacity = '0'; // Hide from view but keep renderable
+
+        document.body.appendChild(wrapper);
+
+        // Clone the element
         const clone = storyRef.current.cloneNode(true) as HTMLElement;
 
-        // Reset styles for the clone to ensure clean capture
-        clone.style.position = 'fixed';
-        clone.style.top = '-10000px';
-        clone.style.left = '0';
-        clone.style.zIndex = '-1000';
-        clone.style.width = '100%';
-        clone.style.maxWidth = '400px'; // Consistent width
-        clone.style.aspectRatio = '9/16';
+        // Reset styles for the clone
+        clone.style.width = '400px'; // Fixed width for consistency
+        clone.style.height = '711px'; // 9:16 aspect ratio (400 * 16/9)
+        clone.style.transform = 'none';
+        clone.style.borderRadius = '0'; // Remove border radius for the image
 
-        document.body.appendChild(clone);
+        wrapper.appendChild(clone);
 
         try {
             // Wait for images to render in the clone
-            await new Promise(resolve => setTimeout(resolve, 500));
+            await new Promise(resolve => setTimeout(resolve, 800)); // Increased timeout
 
             const canvas = await html2canvas(clone, {
                 useCORS: true,
                 scale: 2, // Good quality
                 backgroundColor: '#000000',
                 logging: false,
-                onclone: (doc) => {
-                    // Ensure images are loaded
-                    const images = doc.getElementsByTagName('img');
-                    for (let i = 0; i < images.length; i++) {
-                        images[i].crossOrigin = "Anonymous";
-                    }
-                }
+                width: 400,
+                height: 711,
+                // Removed onclone crossOrigin hack as we use base64
             });
 
             return canvas;
@@ -76,7 +83,7 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
             console.error('Canvas generation failed:', err);
             throw err;
         } finally {
-            document.body.removeChild(clone);
+            document.body.removeChild(wrapper);
         }
     };
 
@@ -180,6 +187,7 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
                         <div
                             ref={storyRef}
                             className="relative w-full aspect-[9/16] bg-black rounded-lg overflow-hidden shadow-2xl"
+                            style={{ backgroundColor: '#000000' }}
                         >
                             {/* Background Image */}
                             {image && (
@@ -191,38 +199,58 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
                             )}
 
                             {/* Overlay Gradient */}
-                            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/80" />
+                            <div
+                                className="absolute inset-0"
+                                style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.3), transparent, rgba(0,0,0,0.8))' }}
+                            />
 
                             {/* Content Overlay */}
                             <div className="absolute inset-0 p-6 flex flex-col justify-between">
                                 {/* Header */}
                                 <div className="text-center pt-4">
-                                    <h1 className="text-3xl font-black text-white italic tracking-tighter drop-shadow-lg">
+                                    <h1 className="text-3xl font-black italic tracking-tighter drop-shadow-lg" style={{ color: '#ffffff' }}>
                                         VÔLEI DE AREIA
                                     </h1>
-                                    <p className="text-white/80 text-sm font-medium uppercase tracking-widest drop-shadow-md">
+                                    <p className="text-sm font-medium uppercase tracking-widest drop-shadow-md" style={{ color: 'rgba(255,255,255,0.8)' }}>
                                         Resenha do Dia
                                     </p>
                                 </div>
 
                                 {/* Ranking List */}
-                                <div className="bg-black/40 backdrop-blur-md rounded-2xl p-4 border border-white/10 shadow-xl">
-                                    <h2 className="text-center text-white font-bold mb-3 uppercase text-xs tracking-wider">
+                                <div
+                                    className="backdrop-blur-md rounded-2xl p-4 shadow-xl"
+                                    style={{
+                                        backgroundColor: 'rgba(0,0,0,0.4)',
+                                        borderColor: 'rgba(255,255,255,0.1)',
+                                        borderWidth: '1px',
+                                        borderStyle: 'solid'
+                                    }}
+                                >
+                                    <h2 className="text-center font-bold mb-3 uppercase text-xs tracking-wider" style={{ color: '#ffffff' }}>
                                         Reis da Quadra
                                     </h2>
                                     <div className="space-y-2">
                                         {sortedPlayers.map((player, index) => (
                                             <div key={player.id} className="flex items-center gap-3">
-                                                <div className={`
-                                                    w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm
-                                                    ${index === 0 ? 'bg-yellow-500' : index === 1 ? 'bg-slate-400' : index === 2 ? 'bg-orange-500' : 'bg-slate-700'}
-                                                `}>
+                                                <div
+                                                    className="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-sm"
+                                                    style={{
+                                                        backgroundColor: index === 0 ? '#EAB308' : index === 1 ? '#94A3B8' : index === 2 ? '#F97316' : '#334155',
+                                                        color: '#ffffff'
+                                                    }}
+                                                >
                                                     {index + 1}
                                                 </div>
-                                                <span className="flex-1 text-white font-bold text-sm truncate drop-shadow-sm">
+                                                <span className="flex-1 font-bold text-sm truncate drop-shadow-sm" style={{ color: '#ffffff' }}>
                                                     {player.name}
                                                 </span>
-                                                <span className="text-white/90 text-xs font-bold bg-white/20 px-2 py-0.5 rounded-full">
+                                                <span
+                                                    className="text-xs font-bold px-2 py-0.5 rounded-full"
+                                                    style={{
+                                                        backgroundColor: 'rgba(255,255,255,0.2)',
+                                                        color: 'rgba(255,255,255,0.9)'
+                                                    }}
+                                                >
                                                     {player.wins} Vitórias
                                                 </span>
                                             </div>
@@ -232,10 +260,10 @@ export function StoryCreator({ players, totalGames }: StoryCreatorProps) {
 
                                 {/* Footer / Date */}
                                 <div className="text-center pb-4">
-                                    <p className="text-white font-bold text-lg drop-shadow-md mb-1">
+                                    <p className="font-bold text-lg drop-shadow-md mb-1" style={{ color: '#ffffff' }}>
                                         {totalGames} Sets Jogados
                                     </p>
-                                    <p className="text-white/60 text-xs font-mono">
+                                    <p className="text-xs font-mono" style={{ color: 'rgba(255,255,255,0.6)' }}>
                                         {new Date().toLocaleDateString('pt-BR')}
                                     </p>
                                 </div>
