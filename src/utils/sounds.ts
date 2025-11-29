@@ -1,4 +1,4 @@
-export const playSound = (type: 'score' | 'decrease' | 'start' | 'finish') => {
+export const playSound = (type: 'score' | 'decrease' | 'start' | 'finish' | 'click') => {
     if (typeof window === 'undefined') return;
 
     try {
@@ -84,6 +84,17 @@ export const playSound = (type: 'score' | 'decrease' | 'start' | 'finish') => {
 
                 endOsc.start(now);
                 endOsc.stop(now + 1.0);
+                break;
+
+            case 'click':
+                // Short click
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(800, now);
+                oscillator.frequency.exponentialRampToValueAtTime(100, now + 0.05);
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                oscillator.start(now);
+                oscillator.stop(now + 0.05);
                 break;
         }
     } catch (e) {

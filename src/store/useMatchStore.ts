@@ -34,6 +34,8 @@ export type AppState = {
 
 // --- Actions Interface ---
 
+export type Location = 'queue' | 'teamA' | 'teamB';
+
 interface MatchStore extends AppState {
     addPlayer: (name: string) => void;
     togglePresence: (id: string) => void;
@@ -45,6 +47,9 @@ interface MatchStore extends AppState {
     rotateQueue: () => void;
     deletePlayer: (id: string) => void;
     editPlayerName: (id: string, name: string) => void;
+    // New actions for drag-and-drop
+    movePlayer: (source: Location, target: Location, playerId: string) => void;
+    reorderQueue: (newOrder: string[]) => void;
     resetMatch: () => void; // Helper to reset match state if needed
     importState: (newState: AppState) => void;
     setPixKey: (key: string) => void;
@@ -113,6 +118,36 @@ export const useMatchStore = create<MatchStore>()(
                     p.id === id ? { ...p, name } : p
                 )
             })),
+
+            // Move a player between queue and teams or between teams
+            movePlayer: (source, target, playerId) => set((state) => {
+                // Helper to remove from a list
+                const removeFrom = (list: string[]) => list.filter((id) => id !== playerId);
+                // Helper to add to a list (avoid duplicates)
+                const addTo = (list: string[]) => (list.includes(playerId) ? list : [...list, playerId]);
+
+                const newState: Partial<MatchStore> = {};
+
+                // Remove from source
+                if (source === 'queue') newState.queue = removeFrom(state.queue);
+                else if (source === 'teamA') newState.match = { ...state.match, teamA: removeFrom(state.match.teamA) };
+                else if (source === 'teamB') newState.match = { ...state.match, teamB: removeFrom(state.match.teamB) };
+
+                // Add to target
+                if (target === 'queue') newState.queue = addTo(newState.queue ?? state.queue);
+                else if (target === 'teamA') {
+                    const teamA = addTo((newState.match?.teamA ?? state.match.teamA));
+                    newState.match = { ...(newState.match ?? state.match), teamA };
+                } else if (target === 'teamB') {
+                    const teamB = addTo((newState.match?.teamB ?? state.match.teamB));
+                    newState.match = { ...(newState.match ?? state.match), teamB };
+                }
+
+                return { ...newState } as MatchStore;
+            }),
+
+            // Reorder the queue (newOrder is an array of player IDs in desired order)
+            reorderQueue: (newOrder) => set(() => ({ queue: newOrder })),
 
             togglePresence: (id) => set((state) => {
                 const player = state.players.find((p) => p.id === id);
