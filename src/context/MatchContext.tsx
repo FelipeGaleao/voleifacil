@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useState, ReactNode } from 'react';
 
 // --- Types ---
 
@@ -20,7 +20,9 @@ export type MatchState = {
     teamB: string[]; // Player IDs
     scoreA: number;
     scoreB: number;
-    history: { winner: Team; score: string }[];
+    history: { winner: Team; score: string; teamA: string[]; teamB: string[] }[];
+    streak: number;
+    streakTeamIds: string[];
 };
 
 export type AppState = {
@@ -41,7 +43,9 @@ type Action =
     | { type: 'ROTATE_QUEUE' }
     | { type: 'DELETE_PLAYER'; id: string }
     | { type: 'EDIT_PLAYER_NAME'; id: string; name: string }
-    | { type: 'DECREASE_POINT'; team: Team };
+    | { type: 'EDIT_PLAYER_NAME'; id: string; name: string }
+    | { type: 'DECREASE_POINT'; team: Team }
+    | { type: 'LOAD_STATE'; payload: AppState };
 
 // --- Initial State ---
 
@@ -55,6 +59,8 @@ const initialState: AppState = {
         scoreA: 0,
         scoreB: 0,
         history: [],
+        streak: 0,
+        streakTeamIds: [],
     },
 };
 
@@ -224,8 +230,34 @@ function matchReducer(state: AppState, action: Action): AppState {
                 return p;
             });
 
-            // Standard Rotation: Winner -> Front of Queue (to be picked for Team A next), Next 4 -> Team B next. Loser -> End of Queue.
-            const nextQueue = [...winnerIds, ...state.queue, ...loserIds];
+            // Rotation Logic: 2-Game Limit
+            const isSameTeam = state.match.streakTeamIds.length > 0 &&
+                winnerIds.length === state.match.streakTeamIds.length &&
+                winnerIds.every(id => state.match.streakTeamIds.includes(id));
+
+            const currentStreak = isSameTeam ? state.match.streak + 1 : 1;
+            const limitReached = currentStreak >= 2;
+
+            let nextQueue: string[];
+            let newStreak: number;
+            let newStreakIds: string[];
+
+            if (limitReached) {
+                // Winner played 2 games -> Goes to end of queue
+                // Loser also goes to end of queue
+                // Order: Queue + Loser + Winner (Winner played most recently, so last?)
+                // Usually: Loser rotates out first. Winner rotates out after.
+                // Let's put Loser then Winner at the end.
+                nextQueue = [...state.queue, ...loserIds, ...winnerIds];
+                newStreak = 0;
+                newStreakIds = [];
+            } else {
+                // Winner stays -> Front of queue
+                // Loser -> End of queue
+                nextQueue = [...winnerIds, ...state.queue, ...loserIds];
+                newStreak = currentStreak;
+                newStreakIds = winnerIds;
+            }
 
             return {
                 ...state,
@@ -240,8 +272,15 @@ function matchReducer(state: AppState, action: Action): AppState {
                     scoreB: 0,
                     history: [
                         ...state.match.history,
-                        { winner: action.winner, score: `${state.match.scoreA}-${state.match.scoreB}` },
+                        {
+                            winner: action.winner,
+                            score: `${state.match.scoreA}-${state.match.scoreB}`,
+                            teamA: state.match.teamA,
+                            teamB: state.match.teamB
+                        },
                     ],
+                    streak: newStreak,
+                    streakTeamIds: newStreakIds,
                 },
             };
         }
@@ -281,6 +320,8 @@ function matchReducer(state: AppState, action: Action): AppState {
                     teamA: newTeamA,
                     teamB: newTeamB,
                     // We don't necessarily set active=true here, as this is just setup
+                    streak: 0,
+                    streakTeamIds: [],
                 }
             };
         }
@@ -326,6 +367,24 @@ function matchReducer(state: AppState, action: Action): AppState {
             };
         }
 
+        case 'LOAD_STATE': {
+            // Migration: Ensure new fields exist if loading old state
+            const loadedMatch = action.payload.match;
+            return {
+                ...action.payload,
+                match: {
+                    ...loadedMatch,
+                    streak: loadedMatch.streak ?? 0,
+                    streakTeamIds: loadedMatch.streakTeamIds ?? [],
+                    history: loadedMatch.history.map((h: any) => ({
+                        ...h,
+                        teamA: h.teamA ?? [],
+                        teamB: h.teamB ?? []
+                    }))
+                }
+            };
+        }
+
         default:
             return state;
     }
@@ -336,33 +395,38 @@ function matchReducer(state: AppState, action: Action): AppState {
 const MatchContext = createContext<{
     state: AppState;
     dispatch: React.Dispatch<Action>;
+    isLoaded: boolean;
 } | null>(null);
 
 export function MatchProvider({ children }: { children: ReactNode }) {
-    // Load from local storage if available (Client side only)
-    const [state, dispatch] = useReducer(matchReducer, initialState, (initial) => {
+    const [state, dispatch] = useReducer(matchReducer, initialState);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    // Load from local storage on mount
+    useEffect(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('volei-manager-state');
             if (saved) {
                 try {
-                    return JSON.parse(saved);
+                    const parsed = JSON.parse(saved);
+                    dispatch({ type: 'LOAD_STATE', payload: parsed });
                 } catch (e) {
                     console.error('Failed to parse saved state', e);
                 }
             }
+            setIsLoaded(true);
         }
-        return initial;
-    });
+    }, []);
 
-    // Save to local storage on every state change
+    // Save to local storage on every state change, ONLY if loaded
     useEffect(() => {
-        if (typeof window !== 'undefined') {
+        if (isLoaded && typeof window !== 'undefined') {
             localStorage.setItem('volei-manager-state', JSON.stringify(state));
         }
-    }, [state]);
+    }, [state, isLoaded]);
 
     return (
-        <MatchContext.Provider value={{ state, dispatch }}>
+        <MatchContext.Provider value={{ state, dispatch, isLoaded }}>
             {children}
         </MatchContext.Provider>
     );

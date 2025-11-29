@@ -8,18 +8,18 @@ import { Card } from "@/components/ui/card";
 import { playSound } from '../../utils/sounds';
 
 export default function MatchPage() {
-    const { state, dispatch } = useMatch();
+    const { state, dispatch, isLoaded } = useMatch();
     const { match, players } = state;
     const router = useRouter();
 
     // Redirect if no active match
     useEffect(() => {
-        if (!match.active) {
+        if (isLoaded && !match.active) {
             router.push('/dashboard');
         }
-    }, [match.active, router]);
+    }, [match.active, router, isLoaded]);
 
-    if (!match.active) return null;
+    if (!isLoaded || !match.active) return null;
 
     const getPlayerName = (id: string) => players.find(p => p.id === id)?.name || 'Unknown';
 
