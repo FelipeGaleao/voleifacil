@@ -27,6 +27,7 @@ export type MatchState = {
 export type AppState = {
     players: Player[];
     queue: string[]; // Player IDs
+    match: MatchState;
     pixKey: string;
     courtValue: number;
 };
