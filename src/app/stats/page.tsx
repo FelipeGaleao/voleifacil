@@ -6,6 +6,7 @@ import { useMatchStore } from '../../store/useMatchStore';
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { StoryCreator } from "@/components/StoryCreator";
 
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -45,6 +46,9 @@ export default function StatsPage() {
                 <h1 className="text-2xl font-bold text-center w-full text-slate-900 tracking-tight">
                     Resumo da Resenha
                 </h1>
+                <div className="absolute right-0">
+                    <StoryCreator players={players} />
+                </div>
             </header>
 
             <ScrollArea className="flex-1 -mx-4 px-4 md:-mx-6 md:px-6 pb-6">
@@ -106,7 +110,7 @@ export default function StatsPage() {
                             px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm
                             ${index === 0 || index === 1 ? 'bg-green-500' : 'bg-orange-400'}
                           `}>
-                                                        {player.wins} Vits
+                                                        {player.wins} Vitórias
                                                     </div>
                                                 </motion.div>
                                             ))}
