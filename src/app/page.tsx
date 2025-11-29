@@ -9,6 +9,8 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from 'next/navigation';
 
+import { PaymentGenerator } from '@/components/PaymentGenerator';
+
 export default function Home() {
   const { players, addPlayer, togglePresence, deletePlayer, editPlayerName } = useMatchStore();
   const [newPlayerName, setNewPlayerName] = useState('');
@@ -46,10 +48,10 @@ export default function Home() {
   };
 
   return (
-    <div className="h-[calc(100dvh-5rem)] bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 overflow-hidden">
+    <div className="h-[calc(100dvh-4rem)] bg-slate-50 flex flex-col items-center p-4 font-sans text-slate-800 overflow-hidden">
       {/* Title */}
       <h1 className="text-2xl font-bold mb-2 text-center text-slate-900 tracking-tight shrink-0">
-        Vôlei Areia STI
+        Vôlei de Areia STI
       </h1>
 
       {/* Main Card Container */}
@@ -58,7 +60,7 @@ export default function Home() {
         {/* Header/Label */}
         <div className="pt-4 px-6 pb-2 shrink-0">
           <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider text-center">
-            {players.length} Jogadores
+            {players.length} Atletas
           </h2>
         </div>
 
@@ -67,7 +69,7 @@ export default function Home() {
           <div className="space-y-3">
             {players.length === 0 ? (
               <p className="text-center text-slate-400 text-sm py-10">
-                Nenhum jogador cadastrado.
+                Nenhum atleta na lista.
               </p>
             ) : (
               players.map((player) => (
@@ -129,7 +131,7 @@ export default function Home() {
         <div className="p-4 bg-slate-50/50 border-t border-slate-100">
           <form onSubmit={handleAddPlayer} className="flex gap-2">
             <Input
-              placeholder="Insira o nome do jogador"
+              placeholder="Nome do craque..."
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               className="rounded-full bg-white border-slate-200 focus-visible:ring-blue-400 h-12 text-base px-6 shadow-sm flex-1"
@@ -146,13 +148,16 @@ export default function Home() {
         </div>
       </Card>
 
-      {/* Start Button */}
-      <div className="w-full max-w-md mt-4 mb-2">
+      {/* Start Button & Payment */}
+      <div className="w-full max-w-md mt-4 mb-2 flex flex-col gap-3">
+        <div className="flex justify-center">
+          <PaymentGenerator />
+        </div>
         <Button
           onClick={handleStartSession}
           className="w-full h-14 text-lg font-bold rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg transition-all active:scale-95"
         >
-          Iniciar sessão de jogo
+          Ir para a Quadra
         </Button>
       </div>
     </div>

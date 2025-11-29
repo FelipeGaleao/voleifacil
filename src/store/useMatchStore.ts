@@ -27,7 +27,8 @@ export type MatchState = {
 export type AppState = {
     players: Player[];
     queue: string[]; // Player IDs
-    match: MatchState;
+    pixKey: string;
+    courtValue: number;
 };
 
 // --- Actions Interface ---
@@ -45,6 +46,8 @@ interface MatchStore extends AppState {
     editPlayerName: (id: string, name: string) => void;
     resetMatch: () => void; // Helper to reset match state if needed
     importState: (newState: AppState) => void;
+    setPixKey: (key: string) => void;
+    setCourtValue: (value: number) => void;
 }
 
 // --- Initial State ---
@@ -62,6 +65,8 @@ const initialState: AppState = {
         streak: 0,
         streakTeamIds: [],
     },
+    pixKey: '',
+    courtValue: 0,
 };
 
 // --- Store ---
@@ -323,6 +328,9 @@ export const useMatchStore = create<MatchStore>()(
             importState: (newState) => set(() => ({
                 ...newState
             })),
+
+            setPixKey: (key) => set(() => ({ pixKey: key })),
+            setCourtValue: (value) => set(() => ({ courtValue: value })),
         }),
         {
             name: 'volei-manager-state', // Keep the same key to preserve data
@@ -340,9 +348,12 @@ export const useMatchStore = create<MatchStore>()(
                             history: (loadedMatch.history || []).map((h: any) => ({
                                 ...h,
                                 teamA: h.teamA ?? [],
+                                ...h,
                                 teamB: h.teamB ?? []
                             }))
-                        }
+                        },
+                        pixKey: persistedState.pixKey ?? '',
+                        courtValue: persistedState.courtValue ?? 0,
                     };
                 }
                 return persistedState;

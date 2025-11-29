@@ -24,11 +24,11 @@ export default function Dashboard() {
     };
 
     return (
-        <div className="h-[calc(100dvh-5rem)] bg-slate-50 flex flex-col p-4 font-sans text-slate-800 overflow-hidden">
+        <div className="h-[calc(100dvh-4rem)] bg-slate-50 flex flex-col p-4 font-sans text-slate-800 overflow-hidden">
             {/* Title */}
             <div className="flex justify-between items-center mb-4 shrink-0">
                 <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
-                    Times
+                    Na Quadra
                 </h1>
                 <ShareButton />
             </div>
@@ -99,7 +99,7 @@ export default function Dashboard() {
             {/* Queue Section */}
             <div className="flex-1 flex flex-col min-h-0 mb-4">
                 <h2 className="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
-                    FILA DE JOGADORES ({queue.length})
+                    PRÓXIMOS (FILA) ({queue.length})
                 </h2>
                 <ScrollArea className="flex-1 -mx-2 px-2">
                     <div className="grid grid-cols-2 gap-3 pb-4">
@@ -110,7 +110,7 @@ export default function Dashboard() {
                                     animate={{ opacity: 1 }}
                                     className="col-span-2 text-slate-400 text-sm text-center py-4"
                                 >
-                                    Fila vazia
+                                    Ninguém na espera
                                 </motion.p>
                             ) : (
                                 queue.map((id) => (
@@ -141,13 +141,13 @@ export default function Dashboard() {
                     onClick={handleShuffle}
                     className="h-14 rounded-full bg-blue-500 hover:bg-blue-600 text-white font-bold shadow-lg active:scale-95 transition-all text-base"
                 >
-                    Misturar Times
+                    Sortear Times
                 </Button>
                 <Button
                     onClick={handleAdvance}
                     className="h-14 rounded-full bg-green-500 hover:bg-green-600 text-white font-bold shadow-lg active:scale-95 transition-all text-base"
                 >
-                    Avançar Fila
+                    Rodar Fila
                 </Button>
             </div>
 
@@ -163,7 +163,7 @@ export default function Dashboard() {
                         router.push('/match');
                     }}
                 >
-                    Iniciar partida
+                    Valendo! (Iniciar)
                 </Button>
             </div>
         </div>

@@ -43,7 +43,7 @@ export default function StatsPage() {
                     </Button>
                 </Link>
                 <h1 className="text-2xl font-bold text-center w-full text-slate-900 tracking-tight">
-                    Estatísticas do Dia
+                    Resumo da Resenha
                 </h1>
             </header>
 
@@ -52,7 +52,7 @@ export default function StatsPage() {
 
                     {/* Ranking Card */}
                     <section>
-                        <h2 className="text-sm font-bold text-slate-500 text-center mb-3">Ranking</h2>
+                        <h2 className="text-sm font-bold text-slate-500 text-center mb-3">Reis da Quadra (Ranking)</h2>
                         <Card className="bg-white border-2 border-blue-400 shadow-sm rounded-3xl overflow-hidden p-1">
                             <div className="divide-y divide-slate-50">
                                 {sortedByWins.length === 0 ? (
@@ -106,7 +106,7 @@ export default function StatsPage() {
                             px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm
                             ${index === 0 || index === 1 ? 'bg-green-500' : 'bg-orange-400'}
                           `}>
-                                                        {player.wins} Vitórias
+                                                        {player.wins} Vits
                                                     </div>
                                                 </motion.div>
                                             ))}
@@ -134,7 +134,8 @@ export default function StatsPage() {
                         {/* Jogadores que mais jogaram (Mini Bars) */}
                         <Card className="bg-white border-0 shadow-sm rounded-3xl p-5 flex flex-col">
                             <div className="flex justify-between items-center mb-4">
-                                <h3 className="text-sm font-bold text-slate-700">Jogadores que mais jogaram</h3>
+                                <h3 className="text-sm font-bold text-slate-700">Os Fominhas</h3>
+                                <small>Jogadores que mais jogaram</small>
                                 <div className="flex items-center gap-1">
                                     <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                                     <span className="text-[10px] text-slate-400 font-bold uppercase">Jogos</span>
@@ -142,17 +143,20 @@ export default function StatsPage() {
                             </div>
                             <div className="space-y-3 flex-1">
                                 {sortedByGames.slice(0, 3).map((player, idx) => (
-                                    <div key={player.id} className="flex items-center gap-2">
-                                        <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-bold text-slate-600">
-                                            {player.name.substring(0, 1)}
+                                    <div key={player.id} className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-xs font-bold text-slate-600 shrink-0">
+                                            {player.name.substring(0, 1).toUpperCase()}
                                         </div>
-                                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                                            <div
-                                                className={`h-full rounded-full ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-green-500' : 'bg-orange-400'}`}
-                                                style={{ width: `${Math.max(10, (player.gamesPlayed / (sortedByGames[0]?.gamesPlayed || 1)) * 100)}%` }}
-                                            ></div>
+                                        <div className="flex-1 flex flex-col gap-1">
+                                            <span className="text-xs font-bold text-slate-700 truncate">{player.name}</span>
+                                            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div
+                                                    className={`h-full rounded-full ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-green-500' : 'bg-orange-400'}`}
+                                                    style={{ width: `${Math.max(10, (player.gamesPlayed / (sortedByGames[0]?.gamesPlayed || 1)) * 100)}%` }}
+                                                ></div>
+                                            </div>
                                         </div>
-                                        <span className="text-xs font-bold text-slate-500 w-4 text-right">{player.gamesPlayed}</span>
+                                        <span className="text-sm font-bold text-slate-500 w-6 text-right">{player.gamesPlayed}</span>
                                     </div>
                                 ))}
                                 {sortedByGames.length === 0 && <span className="text-slate-300 text-xs">Sem dados</span>}
@@ -161,7 +165,7 @@ export default function StatsPage() {
 
                         {/* Jogos Disputados */}
                         <Card className="bg-white border-0 shadow-sm rounded-3xl p-5 flex flex-col items-center justify-center text-center">
-                            <h3 className="text-sm font-bold text-slate-700 mb-2">Jogos Disputados</h3>
+                            <h3 className="text-sm font-bold text-slate-700 mb-2">Sets Jogados</h3>
                             <div className="text-5xl font-black text-slate-900 mb-1">
                                 {totalGames}
                             </div>
@@ -174,7 +178,7 @@ export default function StatsPage() {
 
                     {/* Match History Card */}
                     <section>
-                        <h2 className="text-sm font-bold text-slate-700 mb-3 ml-1">Histórico das Partidas</h2>
+                        <h2 className="text-sm font-bold text-slate-700 mb-3 ml-1">Placares dos Sets</h2>
                         <Card className="bg-white border-0 shadow-sm rounded-3xl overflow-hidden">
                             <div className="divide-y divide-slate-50 p-2">
                                 {match.history.length === 0 ? (

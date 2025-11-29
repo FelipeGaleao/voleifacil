@@ -18,8 +18,8 @@ export default function PlayersPage() {
     return (
         <div className="min-h-screen p-4 pb-24">
             <header className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold text-sport italic">Player Manager</h1>
-                <Link href="/" className="text-blue-600 font-bold">Done</Link>
+                <h1 className="text-2xl font-bold text-sport italic">Gerenciar Jogadores</h1>
+                <Link href="/" className="text-blue-600 font-bold">Concluído</Link>
             </header>
 
             {/* Add Player Form */}
@@ -28,18 +28,18 @@ export default function PlayersPage() {
                     type="text"
                     value={newPlayerName}
                     onChange={(e) => setNewPlayerName(e.target.value)}
-                    placeholder="New Player Name"
+                    placeholder="Nome do Jogador"
                     className="flex-1 p-2 border border-gray-300 rounded-md text-lg"
                 />
                 <button type="submit" className="btn btn-primary">
-                    Add
+                    Adicionar
                 </button>
             </form>
 
             {/* Player List */}
             <div className="space-y-3">
                 {players.length === 0 ? (
-                    <p className="text-center text-gray-500 mt-10">No players yet. Add some!</p>
+                    <p className="text-center text-gray-500 mt-10">Sem jogadores. Adicione alguém!</p>
                 ) : (
                     players.map((player) => (
                         <div
@@ -50,7 +50,7 @@ export default function PlayersPage() {
                             <div>
                                 <h3 className="font-bold text-lg">{player.name}</h3>
                                 <p className="text-sm text-gray-500">
-                                    {player.wins} Wins / {player.gamesPlayed} Games
+                                    {player.wins} Vitórias / {player.gamesPlayed} Jogos
                                 </p>
                             </div>
                             <button
@@ -58,7 +58,7 @@ export default function PlayersPage() {
                                 className={`btn ${player.isPresent ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600'
                                     }`}
                             >
-                                {player.isPresent ? 'Present' : 'Absent'}
+                                {player.isPresent ? 'Presente' : 'Ausente'}
                             </button>
                         </div>
                     ))

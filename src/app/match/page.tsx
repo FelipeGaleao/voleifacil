@@ -89,7 +89,7 @@ export default function MatchPage() {
         <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
             {/* Header */}
             <header className="p-4 flex justify-between items-center bg-white border-b border-slate-100 shadow-sm z-10">
-                <h1 className="font-bold text-slate-500 uppercase tracking-wider text-sm">Partida em Andamento</h1>
+                <h1 className="font-bold text-slate-500 uppercase tracking-wider text-sm">Bola em Jogo</h1>
                 <Button
                     variant="ghost"
                     className="text-slate-400 hover:text-slate-800"
@@ -159,7 +159,7 @@ export default function MatchPage() {
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-6 z-50 animate-in fade-in duration-200">
                     <Card className="w-full max-w-sm p-8 bg-white border-0 shadow-2xl rounded-[2rem] text-center">
                         <h2 className="text-2xl font-black mb-2 uppercase text-slate-800 tracking-tight">
-                            {potentialWinner === 'A' ? 'Time A Venceu!' : 'Time B Venceu!'}
+                            {potentialWinner === 'A' ? 'Vitória do Time A!' : 'Vitória do Time B!'}
                         </h2>
                         <p className="text-slate-500 mb-8 text-lg font-medium">
                             Placar Final: <span className="text-slate-800 font-bold">{match.scoreA} - {match.scoreB}</span>
@@ -169,7 +169,7 @@ export default function MatchPage() {
                             onClick={handleFinishMatch}
                             className="w-full h-14 text-lg font-bold rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg mb-3 transition-all active:scale-95"
                         >
-                            Finalizar Partida
+                            Encerrar Set
                         </Button>
 
                         <Button
@@ -177,7 +177,7 @@ export default function MatchPage() {
                             onClick={() => scorePoint(potentialWinner === 'A' ? 'B' : 'A')} // Undo/Continue
                             className="w-full h-12 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full"
                         >
-                            Corrigir / Continuar
+                            Voltar / Corrigir
                         </Button>
                     </Card>
                 </div>
