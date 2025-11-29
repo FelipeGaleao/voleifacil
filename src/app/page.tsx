@@ -125,13 +125,21 @@ export default function Home() {
 
         {/* Add Player Input */}
         <div className="p-6 bg-slate-50/50 border-t border-slate-100">
-          <form onSubmit={handleAddPlayer}>
+          <form onSubmit={handleAddPlayer} className="flex gap-2">
             <Input
               placeholder="Insira o nome do jogador"
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
-              className="rounded-full bg-white border-slate-200 focus-visible:ring-blue-400 h-12 text-base px-6 shadow-sm"
+              className="rounded-full bg-white border-slate-200 focus-visible:ring-blue-400 h-12 text-base px-6 shadow-sm flex-1"
             />
+            <Button
+              type="submit"
+              size="icon"
+              className="h-12 w-12 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-sm shrink-0"
+              disabled={!newPlayerName.trim()}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="M12 5v14" /></svg>
+            </Button>
           </form>
         </div>
       </Card>

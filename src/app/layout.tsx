@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
-import { MatchProvider } from "../context/MatchContext";
 import { BottomNav } from "@/components/BottomNav";
 
 const poppins = Poppins({
@@ -13,6 +12,20 @@ const poppins = Poppins({
 export const metadata: Metadata = {
   title: "Vôlei Match Manager",
   description: "Organize your volleyball matches with ease.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Vôlei Manager",
+  },
+};
+
+export const viewport = {
+  themeColor: "#3B82F6",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, // Prevents zooming which can feel "web-like"
 };
 
 export default function RootLayout({
@@ -23,12 +36,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} font-sans`}>
-        <MatchProvider>
-          <div className="pb-16">
-            {children}
-          </div>
-          <BottomNav />
-        </MatchProvider>
+        <div className="pb-16">
+          {children}
+        </div>
+        <BottomNav />
       </body>
     </html>
   );
